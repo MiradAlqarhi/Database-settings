@@ -11,15 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('social_media', function (Blueprint $table) {
-        $table->id('mediaID');
-        $table->string('platform');
-        $table->string('linkedAccountURL');
-
-        // اذا جينا ندمج
-        // $table->unsignedBigInteger('UserID');
-
-        $table->timestamps();
+        Schema::create('statistics', function (Blueprint $table) {
+            $table->id('stats_id');
+            $table->date('stat_date');
+            $table->string('metric_name');
+            $table->decimal('metric_value', 10, 2);
+            $table->timestamps();
         });
     }
 
@@ -28,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('social_media');
+        Schema::dropIfExists('statistics');
     }
 };

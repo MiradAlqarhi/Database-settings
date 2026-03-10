@@ -22,11 +22,11 @@ return new class extends Migration
             $table->string('extractedType');
             $table->date('extractedDate');
             $table->string('TournamentName');
-            $table->unsignedBigInteger('playerID');
-             $table->foreign('playerID')
-                ->references('PlayerID')
-                ->on('player')
-                ->onDelete('cascade');
+           // $table->unsignedBigInteger('playerID');
+             //$table->foreign('playerID')
+               // ->references('PlayerID')
+               // ->on('player')
+                //->onDelete('cascade');
 
 
 
