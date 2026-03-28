@@ -3,9 +3,14 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostsController;
 
+// React app
 Route::get('/', function () {
     return view('welcome');
 });
 
-//posts endpoint 
-Route::get('/posts', [PostsController::class, 'index']);
+Route::get('/{any}', function () {
+    return view('welcome');
+})->where('any', '.*');
+
+/* API
+Route::get('/posts', [PostsController::class, 'index']);*/
