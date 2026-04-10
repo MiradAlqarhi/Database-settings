@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('statistics', function (Blueprint $table) {
-            $table->id('stats_id');
-            $table->date('stat_date');
-            $table->string('metric_name');
-            $table->decimal('metric_value', 10, 2);
+        Schema::create('video_services', function (Blueprint $table) {
+            $table->id();
+            $table->string('url');
+            $table->bigInteger('videoSize')->unsigned();
+; 
+            $table->foreignId('tournaments_id')->constrained('tournaments')->cascadeOnDelete();
+
             $table->timestamps();
         });
     }
@@ -25,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('statistics');
+        Schema::dropIfExists('video_services');
     }
 };

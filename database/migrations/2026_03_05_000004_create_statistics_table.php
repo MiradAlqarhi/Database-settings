@@ -11,21 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('follows', function (Blueprint $table) {
-            $table->increments('FollowID');
-            $table->unsignedBigInteger('FollowerID');
-            $table->unsignedBigInteger('FollowingID');
-            $table->unsignedBigInteger('UserID');
-            $table->timestamp();
+        Schema::create('statistics', function (Blueprint $table) {
+            $table->id();
+            $table->date('stat_date');
+            $table->string('metric_name');
+            $table->decimal('metric_value', 10, 2);
+            $table->timestamps();
         });
     }
-
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('follows');
+        Schema::dropIfExists('statistics');
     }
 };

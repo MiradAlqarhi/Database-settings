@@ -12,11 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('player', function (Blueprint $table) {
-        $table->id('playerID');
+        $table->id();
+         $table->string('name');
         $table->integer('age')->unsigned();
         $table->string('gender')->nullable();
         $table->string('game')->nullable();
-        $table->unsignedBigInteger('userID');
+        $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
         $table->timestamps();
         });
     }

@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('_player_statics', function (Blueprint $table) {
-            $table->id('PlayerID');
-            $table->id('ScoutID');
+            $table->foreignId('player_id')->constrained('player')->cascadeOnDelete();
+            $table->foreignId('statistics_id')->constrained('statistics')->cascadeOnDelete();
         });
     }
 

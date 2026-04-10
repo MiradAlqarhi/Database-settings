@@ -12,13 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('scouts', function (Blueprint $table) {
-            $table->increments('scoutID');
+            $table->id();
+            $table->string('name');
             $table->string('organization_name');
             $table->string('workEmail');
             $table->string('OTP')->nullable();
             $table->timestamp('otpExpiry')->nullable();
-            $table->unsignedBigInteger('UserID');
-            $table->timestamp();
+            $table->foreignId('users_id')->nullable()->constrained('users')->cascadeOnDelete();
+            $table->timestamps();
         });
     }
 

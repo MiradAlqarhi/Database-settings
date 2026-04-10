@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('tournamentCalender', function (Blueprint $table) {
            // Primary Key and Fields for Tournament
-           $table->id('tournamentCalenderID');
+           $table->id();
            $table->string('tournamentName');
            $table->string('tournamentLinkURL')->nullable();
            $table->dateTime('tournamentStartTime')->nullable();
            $table->date('upcomingTournamentDate');
-           $table->foreignId('playerID')->constrained()->cascadeOnDelete();
+           $table->foreignId('player_id')->constrained('player')->cascadeOnDelete();
            $table->timestamps();
         });
     }

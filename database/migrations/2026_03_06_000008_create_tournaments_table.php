@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tournaments', function (Blueprint $table) {
-            $table->id('TournamentID');
+            $table->id();
             $table->enum('rank', ['1st', '2ND', '3RD']);
 
             $table->enum('certificateType', [
@@ -22,13 +22,7 @@ return new class extends Migration
             $table->string('extractedType');
             $table->date('extractedDate');
             $table->string('TournamentName');
-           // $table->unsignedBigInteger('playerID');
-             //$table->foreign('playerID')
-               // ->references('PlayerID')
-               // ->on('player')
-                //->onDelete('cascade');
-
-
+            $table->foreignId('player_id')->constrained('player')->cascadeOnDelete();
 
             $table->timestamps();
         });
