@@ -11,6 +11,10 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        dd($request->all());
+        $request->validate([
+         'email' => 'required|email|unique:users',
+         'password' => 'required|min:6',
+        'type' => 'required|in:player,scout',
+]);
     }
 }

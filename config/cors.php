@@ -1,5 +1,4 @@
 <?php
-
 return [
 
     'paths' => ['api/*', 'sanctum/csrf-cookie'],
@@ -17,5 +16,4 @@ return [
     'max_age' => 0,
 
     'supports_credentials' => true,
-
 ];
