@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('extractedType');
             $table->date('extractedDate');
             $table->string('TournamentName');
-            $table->foreignId('player_id')->constrained('player')->cascadeOnDelete();
+            $table->foreignId('player_id')->constrained('players')->cascadeOnDelete();
 
             $table->timestamps();
         });

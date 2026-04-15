@@ -17,6 +17,7 @@ return new class extends Migration
            // $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->enum('type', ['player', 'score']);
+             $table->boolean('profile_completed')->default(false);
             $table->rememberToken();
             $table->timestamps();
         });

@@ -18,7 +18,7 @@ return new class extends Migration
            $table->string('tournamentLinkURL')->nullable();
            $table->dateTime('tournamentStartTime')->nullable();
            $table->date('upcomingTournamentDate');
-           $table->foreignId('player_id')->constrained('player')->cascadeOnDelete();
+           $table->foreignId('player_id')->constrained('players')->cascadeOnDelete();
            $table->timestamps();
         });
     }

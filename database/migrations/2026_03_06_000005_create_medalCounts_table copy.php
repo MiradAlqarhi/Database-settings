@@ -16,7 +16,7 @@ return new class extends Migration
            $table->integer('silverMedal')->default(0);
            $table->integer('BronzeMedal')->default(0);
            $table->integer('GoldMedal')->default(0);
-           $table->foreignId('player_id')->constrained('player')->cascadeOnDelete();
+           $table->foreignId('player_id')->constrained('players')->cascadeOnDelete();
            $table->timestamps();
         });
     }
