@@ -11,61 +11,70 @@ use Illuminate\Support\Facades\Validator;
 class AuthController extends Controller
 {
     public function register(Request $request)
-{
-    $validator = Validator::make($request->all(), [
-        'email' => 'required|email|unique:users,email',
-        'password' => 'required|min:8',
-        'type' => 'required',
-        'profile_completed' => 'boolean',
-    ], [
-        'email.unique' => 'The email has already exists.',
-    ]);
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8',
+            'type' => 'required',
+            'profile_completed' => 'boolean',
+        ], [
+            'email.unique' => 'The email has already exists.',
+        ]);
 
-    if ($validator->fails()) {
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => $validator->errors()->first()
+            ], 422);
+        }
+
+        $user = User::create([
+            'email' => $request->email,
+            'password' => $request->password,
+            'type' => $request->type,
+            'profile_completed' => false,
+        ]);
+
+        Auth::login($user);
+        $request->session()->regenerate();
+
         return response()->json([
-            'message' => $validator->errors()->first()
-        ], 422);
+            'user' => $this->formatUser($user),
+            'message' => 'registered and logged in'
+        ]);
     }
-    
 
-    $user = User::create([
-        'email' => $request->email,
-        'password' => $request->password,
-        'type' => $request->type,
-        'profile_completed' => false,
-    ]);
+    public function login(Request $request)
+    {
+        $credentials = $request->only('email', 'password');
 
-    Auth::login($user);
-    $request->session()->regenerate();
+        if (!Auth::guard('web')->attempt($credentials)) {
+            return response()->json(['message' => 'Invalid login'], 401);
+        }
 
-    return response()->json([
-        'user' => $this->formatUser($user),
-        'message' => 'registered and logged in'
-    ]);
-}
+        $request->session()->regenerate();
 
-
-public function login(Request $request)
-{
-    $credentials = $request->only('email', 'password');
-
-    if (!Auth::guard('web')->attempt($credentials)) {
-        return response()->json(['message' => 'Invalid login'], 401);
+        return response()->json([
+            'user' => $this->formatUser(Auth::user()),
+            'profile_completed' => Auth::user()->profile_completed
+        ]);
     }
-    $request->session()->regenerate();
 
-    return response()->json([
-       'user'=> $this->formatUser(Auth::user()),
-        'profile_completed' => Auth::user()->profile_completed
-    ]);
-}
-
-
- public function user(Request $request)
+    public function user(Request $request)
     {
         return response()->json([
             'success' => true,
-            'user'    => $this->formatUser($request->user()),
+            'user' => $this->formatUser($request->user()),
         ]);
+    }
+
+    // ✅ الدالة الناقصة
+    private function formatUser($user)
+    {
+        return [
+            'id' => $user->id,
+            'email' => $user->email,
+            'type' => $user->type,
+            'profile_completed' => $user->profile_completed,
+        ];
     }
 }
