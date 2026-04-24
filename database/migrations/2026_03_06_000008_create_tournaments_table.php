@@ -19,9 +19,8 @@ return new class extends Migration
                 'Participation Certificate',
                 'Achievement Certificate'
                 ]);
-            $table->string('extractedType');
-            $table->date('extractedDate');
-            $table->string('TournamentName');
+            $table->date('tournamentdate');
+            $table->string('tournamentName');
             $table->foreignId('player_id')->constrained('players')->cascadeOnDelete();
 
             $table->timestamps();
