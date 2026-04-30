@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('tournaments', function (Blueprint $table) {
             $table->id();
-            $table->enum('rank', ['1st', '2ND', '3RD']);
+            $table->enum('rank', ['1ST', '2ND', '3RD']);
 
             $table->enum('certificateType', [
                 'Participation Certificate',

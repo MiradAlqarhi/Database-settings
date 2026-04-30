@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -31,31 +31,31 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => $request->password,
             'type' => $request->type,
-            'profile_completed' => false,
         ]);
 
-        Auth::login($user);
-        $request->session()->regenerate();
+        $token = $user->createToken('app-token')->plainTextToken;
 
         return response()->json([
             'user' => $this->formatUser($user),
+            'token' => $token,
             'message' => 'registered and logged in'
-        ]);
+        ], 201);
     }
 
     public function login(Request $request)
     {
-        $credentials = $request->only('email', 'password');
+        $user = User::where('email', $request->email)->first();
 
-        if (!Auth::guard('web')->attempt($credentials)) {
+        if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json(['message' => 'Invalid login'], 401);
         }
 
-        $request->session()->regenerate();
+        $token = $user->createToken('app-token')->plainTextToken;
 
         return response()->json([
-            'user' => $this->formatUser(Auth::user()),
-            'profile_completed' => Auth::user()->profile_completed
+            'user' => $this->formatUser($user),
+            'token' => $token,
+            'profile_completed' => $user->profile_completed
         ]);
     }
 
@@ -67,7 +67,6 @@ class AuthController extends Controller
         ]);
     }
 
-    // ✅ الدالة الناقصة
     private function formatUser($user)
     {
         return [
