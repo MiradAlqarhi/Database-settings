@@ -9,6 +9,14 @@ class Tournament extends Model
     protected $fillable = [
         'certificateType',
         'tournamentName',
-        'tournamentdate'
+        'tournamentdate',
+        'rank',
+        'player_id'
     ];
+
+
+    public function player()
+    {
+        return $this->belongsTo(Player::class);
+    }
 }

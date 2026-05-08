@@ -9,7 +9,6 @@ class Player extends Model
 {
     use HasFactory;
 
-    // These are the table columns that can be filled
     protected $fillable = [
         'name',
         'age',
@@ -17,11 +16,18 @@ class Player extends Model
         'game',
         'user_id'
     ];
-
-    
-
     public function User()
 {
     return $this->belongsTo(User::class);
 }
+   public function medalCount()
+    {
+        return $this->hasMany(MedalCount::class);
+    }
+
+    public function tournaments()
+    {
+        return $this->hasMany(Tournament::class);
+    }
+
 }

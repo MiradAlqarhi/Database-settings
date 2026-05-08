@@ -76,4 +76,5 @@ class AuthController extends Controller
             'profile_completed' => $user->profile_completed,
         ];
     }
+    
 }

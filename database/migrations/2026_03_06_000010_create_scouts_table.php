@@ -16,8 +16,6 @@ return new class extends Migration
             $table->string('name');
             $table->string('organization_name');
             $table->string('workEmail');
-            $table->string('OTP')->nullable();
-            $table->timestamp('otpExpiry')->nullable();
             $table->foreignId('users_id')->nullable()->constrained('users')->cascadeOnDelete();
             $table->timestamps();
         });

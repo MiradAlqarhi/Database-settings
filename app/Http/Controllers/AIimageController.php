@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Models\Tournament;
+use App\Models\MedalCount;
+use App\Models\Player;
 
 class AIimageController extends Controller
 {
@@ -30,24 +32,22 @@ class AIimageController extends Controller
         }
 
         try {
-            // compress image
             $compressedImage = $this->compressImage($file);
             $base64 = base64_encode($compressedImage);
 
-            // AI request
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $this->openaiKey,
                 'Content-Type' => 'application/json'
             ])->post('https://api.openai.com/v1/chat/completions', [
                 "model" => "gpt-4o-mini",
-                "response_format" => ["type" => "json_object"], // 🔥 مهم
+                "response_format" => ["type" => "json_object"],
                 "messages" => [
                     [
                         "role" => "user",
                         "content" => [
                             [
                                 "type" => "text",
-                               "text" => "You are a certificate data extractor. Extract data from this certificate image and return ONLY a valid JSON object with these exact fields:
+                                "text" => "You are a certificate data extractor. Extract data from this certificate image and return ONLY a valid JSON object with these exact fields:
 - certificateType: must be exactly 'Participation Certificate' or 'Achievement Certificate' based on what you see, or null if unclear
 - tournamentName: the name of the tournament as written
 - tournamentdate: the date in YYYY-MM-DD format or null if not found
@@ -83,21 +83,19 @@ Return ONLY the JSON object, no explanation, no markdown."
                 ], 500);
             }
 
-            // ✅ تنظيف الرد قبل التحويل إلى JSON
             $content = $responseData['choices'][0]['message']['content'];
             $content = preg_replace('/```json|```/', '', $content);
             $content = trim($content);
 
             $data = json_decode($content, true);
 
-            if (!$data) {
+            if (json_last_error() !== JSON_ERROR_NONE) {
                 return response()->json([
-                    'error' => 'Failed to decode AI JSON',
+                    'error' => 'Invalid JSON from AI',
                     'raw' => $content
                 ], 500);
             }
 
-            // sanitize certificate type
             $allowedTypes = [
                 'Participation Certificate',
                 'Achievement Certificate'
@@ -109,25 +107,10 @@ Return ONLY the JSON object, no explanation, no markdown."
                 $type = null;
             }
 
-            // save to DB
-           $player = auth()->user()->player;
-
-if (!$player) {
-    return response()->json([
-        'error' => 'Player not found for this user'
-    ], 404);
-}
-
-$tournament = Tournament::create([
-    'certificateType' => $type,
-    'tournamentName' => $data['tournamentName'] ?? null,
-    'tournamentdate' => $data['tournamentdate'] ?? null,
-    'rank' => $request->input('rank'),
-    'player_id' => $player->id,
-]);
-
             return response()->json([
-                'data' => $tournament
+            'certificateType' => $type,
+            'tournamentName' => $data['tournamentName'] ?? null,
+            'tournamentdate' => $data['tournamentdate'] ?? null,
             ]);
 
         } catch (\Exception $e) {
@@ -138,7 +121,6 @@ $tournament = Tournament::create([
         }
     }
 
-    // compress image
     private function compressImage($file)
     {
         $imageData = file_get_contents($file->getRealPath());
@@ -172,4 +154,54 @@ $tournament = Tournament::create([
 
         return $compressed;
     }
+
+private function updateMedalCount($tournament, $player)
+    {
+ $medal = MedalCount::firstOrCreate([
+        'player_id' => $player->id
+              ], [
+               'gold' => 0,
+               'silver' => 0,
+               'bronze' => 0,
+         ]);
+
+        $rank = $tournament->rank;
+
+        if ($rank === '1ST') {
+            $medalType = 'gold';
+        } elseif ($rank === '2ND') {
+            $medalType = 'silver';
+        } elseif ($rank === '3RD') {
+            $medalType = 'bronze';
+            } else {
+                return; }
+
+        $medal->increaseMedal($medalType);
+
+
+    }
+
+
+private function saveTournaments(Request $request)
+    {
+         $player = auth()->user()->player;
+
+            if (!$player) {
+                return response()->json([
+                    'error' => 'Player not found for this user'
+                ], 404);
+            }
+
+            $tournament = Tournament::create([
+                'certificateType' => $request->input('certificateType'),
+                'tournamentName' => $request->input('tournamentName'),
+                'tournamentdate' => $request->input('tournamentdate'),
+                'rank' => $request->input('rank'),
+                'player_id' => $player->id,
+            ]);
+        
+            $this->updateMedalCount($tournament, $player);
+      
+    }
+
 }

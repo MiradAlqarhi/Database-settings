@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('medalCounts', function (Blueprint $table) {
+        Schema::create('medal_counts', function (Blueprint $table) {
            $table->id();
-           $table->integer('silverMedal')->default(0);
-           $table->integer('BronzeMedal')->default(0);
-           $table->integer('GoldMedal')->default(0);
+           $table->integer('silver')->default(0);
+           $table->integer('bronze')->default(0);
+           $table->integer('gold')->default(0);
            $table->foreignId('player_id')->constrained('players')->cascadeOnDelete();
+
            $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('medalCounts');
+        Schema::dropIfExists('medal_counts');
     }
 };

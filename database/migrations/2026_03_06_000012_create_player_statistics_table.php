@@ -19,6 +19,9 @@ return new class extends Migration
             $table->foreignId('statistics_id')
             ->constrained('statistics')
             ->cascadeOnDelete();
+
+         $table->timestamps();
+
         });
     }
 
