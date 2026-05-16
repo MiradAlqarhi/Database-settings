@@ -11,26 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('notifications', function (Blueprint $table) {
-              $table->id();
-           $table->foreignId('sender_id')
-                 ->constrained('users')
-                 ->cascadeOnDelete();
-
-          $table->foreignId('receiver_id')
-              ->constrained('users')
-              ->cascadeOnDelete();
-
-    $table->string('type'); // follow, tournament, post, etc
-    $table->string('message')->nullable();
-
-    $table->foreignId('follow_id')
-          ->nullable()
-          ->constrained('follows')
-          ->cascadeOnDelete();
-
-    $table->timestamps();
-});
+    Schema::create('notifications', function (Blueprint $table) {
+        $table->id();
+        $table->string('title');
+        $table->text('message');
+        $table->boolean('is_read')->default(false);
+        $table->string('type'); 
+        $table->unsignedBigInteger('tournament_id')->nullable(); 
+        $table->unsignedBigInteger('related_user_id')->nullable(); 
+        $table->timestamps();
+    });
     }
 
     /**

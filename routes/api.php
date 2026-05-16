@@ -1,12 +1,6 @@
-
 <?php
 
-use App\Http\Controllers\AuthController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\NotificationController;
 
-Route::post('/register', [AuthController::class, 'register']);
-
-Route::post('/login', [AuthController::class,'login']);
-
-Route::middleware('auth:sanctum')->get('/user', function () {
-    return auth()->user();
-});
+Route::get('/notifications', [NotificationController::class, 'index']);
