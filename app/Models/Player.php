@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models;
-
+use App\Models\SocialMedia;//اضفت ذا
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,6 +14,7 @@ class Player extends Model
         'age',
         'gender',
         'game',
+        'contact_email',
         'user_id'
     ];
     public function User()
@@ -29,5 +30,9 @@ class Player extends Model
     {
         return $this->hasMany(Tournament::class);
     }
-
+    //اضفت ذا
+public function socialMedia()
+{
+    return $this->hasMany(SocialMedia::class, 'user_id', 'user_id');
+}
 }

@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Player;
 use Illuminate\Support\Facades\DB;
-
-
+use App\Models\SocialMedia;//اضفت ذا
+use App\Models\Follow;
 class PlayerController extends Controller
 {
     public function store(Request $request)
@@ -16,6 +16,7 @@ class PlayerController extends Controller
             'age'    => $request->age,
             'gender' => $request->gender,
             'game'   => $request->game,
+           'contact_email' => $request->contact_email ?? null,
              'user_id' => auth()->id(),
         ]);
 
@@ -65,6 +66,61 @@ $medalStats = Player::select(DB::raw('SUM(gold) as total_gold, SUM(silver) as to
         'age_stats' => $ageStats,
         'medal_stats' => $medalStats,
         'average' => $averageAge
+    ]);
+}
+//اضفت ذا
+public function show()
+{
+    $player = Player::with(['user', 'socialMedia'])
+        ->where('user_id', auth()->id())
+        ->latest()
+        ->first();
+       $followersCount = Follow::where('following_id', auth()->id())->count();
+       $player->followersCount = $followersCount;
+
+    return response()->json($player);
+
+}
+//اضفت ذا
+public function updateProfile(Request $request)
+{
+    $player = Player::where('user_id', auth()->id())->latest()->first();
+
+    if (!$player) {
+        return response()->json([
+            'message' => 'Player profile not found'
+        ], 404);
+    }
+
+    $user = auth()->user();
+
+    if (!empty($request->email)) {
+        $user->email = $request->email;
+        $user->save();
+    }
+
+    $player->update([
+        'name' => $request->name ?? $player->name,
+        'age' => $request->age ?? $player->age,
+        'game' => $request->game ?? $player->game,
+        'contact_email' => $request->contact_email ?? $player->contact_email,
+    ]);
+
+    SocialMedia::where('user_id', auth()->id())->delete();
+
+    foreach (['instagram', 'x', 'snapchat', 'discord'] as $platform) {
+        if (!empty($request->$platform)) {
+            SocialMedia::create([
+                'platform' => $platform,
+                'url' => $request->$platform,
+                'user_id' => auth()->id(),
+            ]);
+        }
+    }
+
+    return response()->json([
+        'message' => 'Profile updated',
+        'player' => $player
     ]);
 }
 }

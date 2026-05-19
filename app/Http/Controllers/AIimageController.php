@@ -181,8 +181,8 @@ private function updateMedalCount($tournament, $player)
 
     }
 
-
-private function saveTournaments(Request $request)
+//غيت ذا public 
+public function saveTournaments(Request $request)
     {
          $player = auth()->user()->player;
 
@@ -203,5 +203,18 @@ private function saveTournaments(Request $request)
             $this->updateMedalCount($tournament, $player);
       
     }
+    //اضفت ذا
+    public function getTournaments()
+{
+    $player = auth()->user()->player;
+
+    if (!$player) {
+        return response()->json([]);
+    }
+
+    return response()->json(
+        Tournament::where('player_id', $player->id)->latest()->get()
+    );
+}
 
 }
