@@ -19,4 +19,12 @@ class Tournament extends Model
     {
         return $this->belongsTo(Player::class);
     }
+
+    public function video()
+    {
+        return $this->hasMany(VideoService::class);
+    }
+
+
+
 }

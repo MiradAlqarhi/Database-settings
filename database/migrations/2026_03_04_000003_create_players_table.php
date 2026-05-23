@@ -17,7 +17,7 @@ return new class extends Migration
         $table->integer('age')->unsigned();
         $table->string('gender')->nullable();
         $table->string('game')->nullable();
-        
+         $table->string('contact_email')->nullable();
         $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
         $table->timestamps();
         });

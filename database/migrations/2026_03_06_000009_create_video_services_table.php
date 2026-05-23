@@ -15,9 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('url');
             $table->bigInteger('videoSize')->unsigned();
-; 
-            $table->foreignId('tournaments_id')->constrained('tournaments')->cascadeOnDelete();
-
+            $table->foreignId('tournament_id')->constrained('tournaments')->cascadeOnDelete();
             $table->timestamps();
         });
     }

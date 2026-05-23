@@ -177,31 +177,57 @@ private function updateMedalCount($tournament, $player)
                 return; }
 
         $medal->increaseMedal($medalType);
-
-
     }
 
 
-private function saveTournaments(Request $request)
-    {
-         $player = auth()->user()->player;
+public function saveTournaments(Request $request)
+{
+    $player = auth()->user()->player;
 
-            if (!$player) {
-                return response()->json([
-                    'error' => 'Player not found for this user'
-                ], 404);
-            }
-
-            $tournament = Tournament::create([
-                'certificateType' => $request->input('certificateType'),
-                'tournamentName' => $request->input('tournamentName'),
-                'tournamentdate' => $request->input('tournamentdate'),
-                'rank' => $request->input('rank'),
-                'player_id' => $player->id,
-            ]);
-        
-            $this->updateMedalCount($tournament, $player);
-      
+    if (!$player) {
+        return response()->json(['error' => 'Player not found'], 404);
     }
 
+    $info = $request->input('certificateInfo');
+
+    $tournament = Tournament::create([
+        'certificateType'  => $info['certificateType'],
+        'tournamentName'   => $info['tournamentName'],
+        'tournamentdate'   => $info['tournamentdate'],
+        'rank'             => $info['rank'] ?? null,
+        'player_id'        => $player->id,
+    ]);
+
+    $this->updateMedalCount($tournament, $player);
+
+    return response()->json($tournament); 
 }
+
+ public function getTournaments(Request $request)
+{
+    $user = auth()->user();
+
+    if (!$user) {
+        return response()->json([], 401);
+    }
+
+    // إذا في player_id في الـ query استخدمه، وإلا استخدم اليوزر الحالي
+    if ($request->query('player_id')) {
+        $playerId = $request->query('player_id');
+    } else {
+        $player = $user->player;
+        if (!$player) {
+            return response()->json([]);
+        }
+        $playerId = $player->id;
+    }
+
+    $tournaments = Tournament::where('player_id', $playerId)
+        ->with('video')
+        ->latest()
+        ->get();
+
+    return response()->json($tournaments);
+}
+}
+

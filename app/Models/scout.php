@@ -21,4 +21,8 @@ class scout extends Model
     return $this->belongsTo(User::class);
 }
 
+ public function socialMedia()
+{
+    return $this->hasMany(SocialMedia::class, 'user_id', 'user_id');
+}
 }

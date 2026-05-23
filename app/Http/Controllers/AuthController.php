@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
@@ -76,5 +77,16 @@ class AuthController extends Controller
             'profile_completed' => $user->profile_completed,
         ];
     }
+
+    private function avatar(Request $request){
+
+        $imageUrl = null;
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('players_images', 's3');
+            $imageUrl = Storage::disk('s3')->url($path);
+        }
+        }
+
+
     
 }
